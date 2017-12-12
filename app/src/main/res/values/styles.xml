@@ -1,0 +1,126 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="MaterialIndicator.Demo">
+        <item name="mi_indicatorColor">?android:attr/colorAccent</item>
+        <item name="mi_indicatorPadding">32dp</item>
+        <item name="mi_indicatorRadius">4dp</item>
+    </style>
+
+    <style name="MaterialIndicator">
+        <item name="mi_indicatorRadius">4dp</item>
+        <item name="mi_indicatorColor">#ff009688</item>
+    </style>
+
+    <style name="bottom_tab">
+
+        <item name="android:layout_width" >0dp</item>
+        <item name="android:layout_height" >wrap_content</item>
+        <item name="android:layout_weight" >1</item>
+        <item name="android:text" >0dp</item>
+        <item name="android:layout_marginTop">3dp</item>
+        <item name="android:background" >@drawable/sel_bottom_tab_text</item>
+        <!-- <item name="android:background" >@android:color/transparent</item>-->
+        <item name="android:gravity" >center</item>
+        <!--   <item name="android:textColor" >@drawable/sel_bottom_tab_text</item>-->
+        <item name="android:padding" >3dp</item>
+        <item name="android:button" >@null</item>
+        <item name="android:textSize" >10dp</item>
+
+    </style>
+
+
+    <style name="tab_menu_text">
+        <!-- <item name="android:layout_marginTop">5dp</item>-->
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:textColor">@drawable/sel_bottom_tab_text</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:padding" >3dp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="tab_menu_bgnum">
+        <item name="android:layout_width">20dp</item>
+        <item name="android:layout_height">20dp</item>
+        <item name="android:background">@mipmap/end_point</item>
+        <item name="android:layout_marginLeft">-10dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
+    <!-- 对话框-->
+    <style name="map_dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="no_title_dialog" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:windowIsFloating">true</item>
+        <item name="windowNoTitle">false</item>
+        <item name="android:background">@color/splitline_color</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="transparent_dialog" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:windowIsFloating">true</item><!--是否浮现在activity之上-->
+        <item name="android:windowIsTranslucent">false</item><!--半透明-->
+        <item name="android:windowNoTitle">true</item><!--无标题-->
+        <item name="android:windowBackground">@color/transparent</item><!--背景透明-->
+    </style>
+
+    <style name="param_dialog">
+        <!--灰度值，用来控制dialog外的背景的明暗，默认为0.5-->
+        <item name="android:backgroundDimAmount">0.7</item>
+        <!--是否浮在activity上面-->
+        <item name="android:windowIsFloating">true</item>
+        <!--是否需要标题-->
+        <item name="windowNoTitle">false</item>
+        <!--dialog背景颜色-->
+        <item name="android:background">@color/white_FFFFFF</item>
+        <!--是否让dialog外的背景设置半透明-->
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="dialogstyle" parent="android:Animation">
+        <item name="@android:windowEnterAnimation">@anim/dialog_enter</item>
+        <item name="@android:windowExitAnimation">@anim/dialog_exit</item>
+    </style>
+
+    <style name="loading_dialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/tv_white</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="MyAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#fff</item>
+        <item name="colorPrimaryDark">#333</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="toolbarStyle">@style/ClubToolbar</item>
+    </style>
+
+    <style name="ClubToolbar" parent="Base.Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+    </style>
+
+
+    <style name="popWindowStyle" parent="@android:style/Animation.Activity">
+        <item name="android:windowEnterAnimation">@anim/anim_popwindow_in</item>
+        <item name="android:windowExitAnimation">@anim/anim_popwindow_out</item>
+    </style>
+
+</resources>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#ffffff">
+    <ImageView
+        android:padding="4dp"
+        android:id="@+id/compare_shop_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@mipmap/shop_bg_1"
+        android:scaleType="fitCenter"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/compare_shopname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="百业家电专营店"
+
+        android:layout_marginTop="10dp"
+        android:textSize="16dp"
+        android:layout_toRightOf="@id/compare_shop_image"
+         />
+
+    <com.example.ywx.lib.StarRating
+        android:id="@+id/ratingbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/compare_shop_image"
+        android:layout_below="@id/compare_shopname"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        app:starCount="5"
+        app:starSize="15dp"
+        app:starSpacing="0"
+        app:clickable="false"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/compare_money"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:text="3990.00"
+        android:textColor="@color/priceColor"
+        android:textSize="18dp"/>
+    <TextView
+        android:id="@+id/compare_sale"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="商品销量:1234"
+        android:layout_below="@id/compare_money"
+        android:layout_alignRight="@id/compare_money"
+        android:textSize="@dimen/text_size_min"
+        android:textColor="@color/text_dark_gray"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/compare_1"
+        android:layout_toLeftOf="@id/compare_money"
+        android:layout_marginTop="15dp"
+
+        android:text="￥"
+        android:textColor="@color/priceColor"
+        android:textSize="18dp"/>
+
+    <View
+        android:layout_below="@id/compare_shop_image"
+        android:background="@color/splitline_color"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+</RelativeLayout>
