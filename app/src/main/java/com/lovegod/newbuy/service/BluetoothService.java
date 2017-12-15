@@ -16,7 +16,6 @@ import android.util.Log;
 import com.lovegod.newbuy.api.BaseObserver;
 import com.lovegod.newbuy.api.NetWorks;
 import com.lovegod.newbuy.receiver.BlutoothReceiver;
-import com.lovegod.newbuy.utils.system.ComputeUtil;
 import com.lovegod.newbuy.utils.system.Point;
 
 import java.util.Collections;
@@ -185,12 +184,16 @@ public class BluetoothService extends Service {
                 c.setX(blutoothCusList.get(2).getX());
                 c.setY(blutoothCusList.get(2).getY());
 
-                Point tPoint = ComputeUtil.getTPoint(a, b, c, blutoothCusList.get(0).getDistance(), blutoothCusList.get(1).getDistance(), blutoothCusList.get(2).getDistance());
+                try {
+//                    Point tPoint = ComputeUtil.getTPoint(a, b, c, blutoothCusList.get(0).getDistance(), blutoothCusList.get(1).getDistance(), blutoothCusList.get(2).getDistance());
 
-                Intent intentRec = new Intent(this, BlutoothReceiver.class);
-                intentRec.putExtra("device", blutoothDevi);
-                intentRec.putExtra("point", tPoint);
-                sendBroadcast(intentRec);
+                    Intent intentRec = new Intent(getApplication(), BlutoothReceiver.class);
+                    intentRec.putExtra("device", blutoothDevi);
+//                    intentRec.putExtra("point", tPoint);
+                    sendBroadcast(intentRec);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 //                AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
 //                //读者可以修改此处的Minutes从而改变提醒间隔时间
 //                //此处是设置每隔55分钟启动一次

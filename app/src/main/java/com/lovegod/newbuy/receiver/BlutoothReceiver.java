@@ -1,26 +1,22 @@
 package com.lovegod.newbuy.receiver;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.NotificationCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.lovegod.newbuy.MyApplication;
@@ -30,9 +26,15 @@ import com.lovegod.newbuy.api.NetWorks;
 import com.lovegod.newbuy.bean.Commodity;
 import com.lovegod.newbuy.bean.Goods;
 import com.lovegod.newbuy.service.BlutoothCus;
-import com.lovegod.newbuy.utils.system.Point;
 import com.lovegod.newbuy.utils.system.SpUtils;
+import com.lovegod.newbuy.utils.view.DialogActivity;
 import com.lovegod.newbuy.view.goods.GoodActivity;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Random;
 
 
 /**
@@ -40,6 +42,12 @@ import com.lovegod.newbuy.view.goods.GoodActivity;
  */
 
 public class BlutoothReceiver extends BroadcastReceiver {
+
+    //获取手机系统
+    private static final String KEY_MIUI_VERSION_CODE="ro.miui.ui.version.code";
+    private static final String KEY_MIUI_VERSION_NAME="ro.miui.ui.version.name";
+    private static final String KEY_MIUI_INTERNAL_STORAGE="ro.miui.internal.storage";
+
 
     Goods goodss = new Goods();
 
@@ -50,7 +58,7 @@ public class BlutoothReceiver extends BroadcastReceiver {
         BlutoothCus blutoothCus1 = (BlutoothCus) SpUtils.getObject(context, "ble");
 
 
-        Point point = (Point) intent.getSerializableExtra("point");
+//        Point point = (Point) intent.getSerializableExtra("point");
 
         if (blutoothCus1 != null) {
             if (blutoothCus1.getAddress().equals(blutoothCus.getAddress())) {
@@ -60,9 +68,11 @@ public class BlutoothReceiver extends BroadcastReceiver {
                         SpUtils.removeKey(context, "ble");
                         SpUtils.putObject(context, "ble", blutoothCus);
                         Log.v("推送蓝牙", blutoothCus.getAddress());
-                        Log.v("推送坐标", point.getX() + " " + point.getY());
+//                        Log.v("推送坐标", point.getX() + " " + point.getY());
 
-                        NetWorks.getPushCommodity(blutoothCus.getAddress(), point.getX(), point.getY(),1, new BaseObserver<Commodity>() {
+                        Random random=new Random();
+                        NetWorks.findCommodity(random.nextInt(10)+1, new BaseObserver<Commodity>() {
+//                        NetWorks.getPushCommodity(blutoothCus.getAddress(), point.getX(), point.getY(),1, new BaseObserver<Commodity>() {
                             @Override
                             public void onHandleSuccess(final Commodity commodity) {
                                 //设置点击通知栏的动作为启动另外一个广播
@@ -71,25 +81,68 @@ public class BlutoothReceiver extends BroadcastReceiver {
                                     if (size > 0) {
                                         //显示弹窗
                                         // 获得广播发送的数据
-                                        showDialog(context,commodity);
-                                   /*     AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                                        dialogBuilder.setTitle("猜您喜欢");
-                                        dialogBuilder.setMessage(commodity.getProductname());
+
+                                        Bundle bundle = new Bundle();
+                                        bundle.putSerializable("commodity", commodity);
+                                        Intent intent1=new Intent(context, DialogActivity.class);
+                                        intent1.putExtras(bundle);
+                                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        context.startActivity(intent1);
+
+                                     /*  AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                                        //  dialogBuilder.setTitle("猜您喜欢");
+                                        //  dialogBuilder.setMessage(commodity.getProductname());
                                         dialogBuilder.setCancelable(false);
-                                        dialogBuilder.setPositiveButton("查看", new DialogInterface.OnClickListener() {
+                                        View view = LayoutInflater.from(context).inflate(R.layout.blutooth_dialog,null);
+                                        final AlertDialog alertDialog = dialogBuilder.create();
+                                        alertDialog.setView(view);
+                                        Button blueOk = (Button) view.findViewById(R.id.blue_ok);
+                                        Button blueNo = (Button) view.findViewById(R.id.blue_no);
+                                        ImageView blueGoodImg = (ImageView) view.findViewById(R.id.blue_good_img);
+                                        TextView blueGoodName = (TextView) view.findViewById(R.id.blue_good_name);
+                                        TextView blueGoodMoney = (TextView) view.findViewById(R.id.blue_good_money);
+                                        TextView blueGoodNum = (TextView) view.findViewById(R.id.blue_good_num);
+                                        Glide.with(context).load(commodity.getLogo()).into(blueGoodImg);
+                                        blueGoodName.setText(commodity.getProductname());
+                                        blueGoodMoney.setText(commodity.getPrice() + "元");
+                                        blueGoodNum.setText("销售量："+commodity.getSalesvolu() + "");
+                                        blueNo.setOnClickListener(new View.OnClickListener() {
                                             @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                            public void onClick(View v) {
+                                                alertDialog.dismiss();
+                                            }
+                                        });
+                                        blueOk.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
                                                 Bundle bundle = new Bundle();
                                                 bundle.putSerializable("commodity", commodity);
                                                 Intent intent1 = new Intent(context, GoodActivity.class);
-                                                intent.putExtras(bundle);
+                                                intent1.putExtras(bundle);
+                                                intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
                                                 context.startActivity(intent1);
+                                                alertDialog.dismiss();
                                             }
                                         });
-                                        dialogBuilder.setNegativeButton("残忍拒绝", null);
-                                        AlertDialog alertDialog = dialogBuilder.create();
-                                        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                                        Properties prop=new Properties();
+                                        try {
+                                            prop.load(new FileInputStream(new File(Environment.getRootDirectory(),"build.prop")));
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        if (prop.getProperty(KEY_MIUI_INTERNAL_STORAGE, null) != null || prop.getProperty(KEY_MIUI_VERSION_CODE, null) != null || prop.getProperty(KEY_MIUI_VERSION_NAME, null) != null) {
+                                            alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
+                                        } else {
+                                            alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                                        }
+
+                                        WindowManager.LayoutParams layoutParams = alertDialog.getWindow().getAttributes();
+                                        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                                        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                                        alertDialog.getWindow().setAttributes(layoutParams);
                                         alertDialog.show();*/
+
 
                                     } else {
                                         //显示通知栏
@@ -128,9 +181,10 @@ public class BlutoothReceiver extends BroadcastReceiver {
                     SpUtils.removeKey(context, "ble");
                     SpUtils.putObject(context, "ble", blutoothCus);
                     Log.v("推送蓝牙", blutoothCus.getAddress());
-                    Log.v("推送坐标", point.getX() + " " + point.getY());
-
-                    NetWorks.getPushCommodity(blutoothCus.getAddress(), point.getX(), point.getY(),1, new BaseObserver<Commodity>() {
+//                    Log.v("推送坐标", point.getX() + " " + point.getY());
+                    Random random=new Random();
+                    NetWorks.findCommodity(random.nextInt(10)+1, new BaseObserver<Commodity>() {
+//                    NetWorks.getPushCommodity(blutoothCus.getAddress(), point.getX(), point.getY(),1, new BaseObserver<Commodity>() {
                         @Override
                         public void onHandleSuccess(final Commodity commodity) {
                             //设置点击通知栏的动作为启动另外一个广播
@@ -139,25 +193,55 @@ public class BlutoothReceiver extends BroadcastReceiver {
                                 if (size > 0) {
                                     //显示弹窗
                                     // 获得广播发送的数据
-                                    showDialog(context,commodity);
-                                 /*   AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                                    dialogBuilder.setTitle("猜您喜欢");
-                                    dialogBuilder.setMessage(commodity.getProductname());
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable("commodity", commodity);
+                                    Intent intent1=new Intent(context, DialogActivity.class);
+                                    intent1.putExtras(bundle);
+                                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    context.startActivity(intent1);
+                                 /*  AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                                  //  dialogBuilder.setTitle("猜您喜欢");
+                                  //  dialogBuilder.setMessage(commodity.getProductname());
                                     dialogBuilder.setCancelable(false);
-                                    dialogBuilder.setPositiveButton("查看", new DialogInterface.OnClickListener() {
+                                    View view = LayoutInflater.from(context).inflate(R.layout.blutooth_dialog,null);
+                                    final AlertDialog alertDialog = dialogBuilder.create();
+                                    alertDialog.setView(view);
+                                    Button blueOk = (Button) view.findViewById(R.id.blue_ok);
+                                    Button blueNo = (Button) view.findViewById(R.id.blue_no);
+                                    ImageView blueGoodImg = (ImageView) view.findViewById(R.id.blue_good_img);
+                                    TextView blueGoodName = (TextView) view.findViewById(R.id.blue_good_name);
+                                    TextView blueGoodMoney = (TextView) view.findViewById(R.id.blue_good_money);
+                                    TextView blueGoodNum = (TextView) view.findViewById(R.id.blue_good_num);
+                                    Glide.with(context).load(commodity.getLogo()).into(blueGoodImg);
+                                    blueGoodName.setText(commodity.getProductname());
+                                    blueGoodMoney.setText(commodity.getPrice() + "元");
+                                    blueGoodNum.setText("销售量："+commodity.getSalesvolu() + "");
+                                    blueNo.setOnClickListener(new View.OnClickListener() {
                                         @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                        public void onClick(View v) {
+                                            alertDialog.dismiss();
+                                        }
+                                    });
+                                    blueOk.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
                                             Bundle bundle = new Bundle();
                                             bundle.putSerializable("commodity", commodity);
                                             Intent intent1 = new Intent(context, GoodActivity.class);
-                                            intent.putExtras(bundle);
+                                            intent1.putExtras(bundle);
+                                            intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                             context.startActivity(intent1);
+                                            alertDialog.dismiss();
                                         }
                                     });
-                                    dialogBuilder.setNegativeButton("残忍拒绝", null);
-                                    AlertDialog alertDialog = dialogBuilder.create();
                                     alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                                    WindowManager.LayoutParams layoutParams = alertDialog.getWindow().getAttributes();
+                                    layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                                    layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                                    alertDialog.getWindow().setAttributes(layoutParams);
                                     alertDialog.show();*/
+
+
                                 } else {
                                     //显示通知栏
                                     Intent broadcastIntent = new Intent(context, NotificationReceiver.class);
@@ -194,9 +278,10 @@ public class BlutoothReceiver extends BroadcastReceiver {
             if (blutoothCus.getRssi() > -80) {
                 SpUtils.putObject(context, "ble", blutoothCus);
                 Log.v("推送蓝牙", blutoothCus.getAddress());
-                Log.v("推送坐标", point.getX() + " " + point.getY());
-
-                NetWorks.getPushCommodity(blutoothCus.getAddress(), point.getX(), point.getY(),1, new BaseObserver<Commodity>() {
+//                Log.v("推送坐标", point.getX() + " " + point.getY());
+                Random random=new Random();
+                NetWorks.findCommodity(random.nextInt(10)+1, new BaseObserver<Commodity>() {
+//                NetWorks.getPushCommodity(blutoothCus.getAddress(), point.getX(), point.getY(),1, new BaseObserver<Commodity>() {
                     @Override
                     public void onHandleSuccess(final Commodity commodity) {
                         //设置点击通知栏的动作为启动另外一个广播
@@ -205,27 +290,56 @@ public class BlutoothReceiver extends BroadcastReceiver {
                             if (size > 0) {
                                 //显示弹窗
                                 // 获得广播发送的数据
-                                showDialog(context,commodity);
-
-
-                               /* AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
-                                dialogBuilder.setTitle("猜您喜欢");
-                                dialogBuilder.setMessage(commodity.getProductname());
+                                Bundle bundle = new Bundle();
+                                bundle.putSerializable("commodity", commodity);
+                                Intent intent1=new Intent(context, DialogActivity.class);
+                                intent1.putExtras(bundle);
+                                intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent1);
+                              /*  AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                                //  dialogBuilder.setTitle("猜您喜欢");
+                                //  dialogBuilder.setMessage(commodity.getProductname());
                                 dialogBuilder.setCancelable(false);
-                                dialogBuilder.setPositiveButton("查看", new DialogInterface.OnClickListener() {
+                                View view = LayoutInflater.from(context).inflate(R.layout.blutooth_dialog,null);
+                                final AlertDialog alertDialog = dialogBuilder.create();
+                                alertDialog.setView(view);
+                                Button blueOk = (Button) view.findViewById(R.id.blue_ok);
+                                Button blueNo = (Button) view.findViewById(R.id.blue_no);
+                                ImageView blueGoodImg = (ImageView) view.findViewById(R.id.blue_good_img);
+                                TextView blueGoodName = (TextView) view.findViewById(R.id.blue_good_name);
+                                TextView blueGoodMoney = (TextView) view.findViewById(R.id.blue_good_money);
+                                TextView blueGoodNum = (TextView) view.findViewById(R.id.blue_good_num);
+                                Glide.with(context).load(commodity.getLogo()).into(blueGoodImg);
+                                blueGoodName.setText(commodity.getProductname());
+                                blueGoodMoney.setText(commodity.getPrice() + "元");
+                                blueGoodNum.setText("销售量："+commodity.getSalesvolu() + "");
+                                blueNo.setOnClickListener(new View.OnClickListener() {
                                     @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    public void onClick(View v) {
+                                        alertDialog.dismiss();
+                                    }
+                                });
+                                blueOk.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
                                         Bundle bundle = new Bundle();
                                         bundle.putSerializable("commodity", commodity);
                                         Intent intent1 = new Intent(context, GoodActivity.class);
-                                        intent.putExtras(bundle);
+                                        intent1.putExtras(bundle);
+                                        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         context.startActivity(intent1);
+                                        alertDialog.dismiss();
                                     }
                                 });
-                                dialogBuilder.setNegativeButton("残忍拒绝", null);
-                                AlertDialog alertDialog = dialogBuilder.create();
                                 alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+                                WindowManager.LayoutParams layoutParams = alertDialog.getWindow().getAttributes();
+                                layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                                layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                                alertDialog.getWindow().setAttributes(layoutParams);
+
                                 alertDialog.show();*/
+
+
                             } else {
                                 //显示通知栏
                                 Intent broadcastIntent = new Intent(context, NotificationReceiver.class);
@@ -263,53 +377,4 @@ public class BlutoothReceiver extends BroadcastReceiver {
     }
 
 
-    public static void showDialog(final Context context , final Commodity commodity1) {
-        View root = LayoutInflater.from(context).inflate(R.layout.blutooth_dialog, null);
-        Button blueOk;
-        Button blueNo;
-        ImageView blueGoodImg;
-        final TextView blueGoodName;
-        TextView blueGoodMoney ;
-        TextView blueGoodNum;
-        blueOk = (Button) root.findViewById(R.id.blue_ok);
-        blueNo = (Button) root.findViewById(R.id.blue_no);
-        blueGoodImg = (ImageView) root.findViewById(R.id.blue_good_img);
-        blueGoodName = (TextView) root.findViewById(R.id.blue_good_name);
-        blueGoodMoney = (TextView) root.findViewById(R.id.blue_good_money);
-        blueGoodNum = (TextView) root.findViewById(R.id.blue_good_num);
-        Glide.with(context).load(commodity1.getLogo()).into(blueGoodImg);
-        blueGoodName.setText(commodity1.getProductname());
-        blueGoodMoney.setText(commodity1.getPrice() + "元");
-        blueGoodNum.setText("销售量："+commodity1.getSalesvolu() + "");
-
-        final Dialog dialog = new Dialog(context);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);//设置无标题
-        dialog.setContentView(root);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);//设置背景透明
-
-        blueNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-        blueOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("commodity", commodity1);
-                Intent intent1 = new Intent(context, GoodActivity.class);
-                intent1.putExtras(bundle);
-                context.startActivity(intent1);
-            }
-        });
-
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        int displayWidth = dm.widthPixels;
-        int displayHeight = dm.heightPixels;
-        android.view.WindowManager.LayoutParams p = dialog.getWindow().getAttributes();  //获取对话框当前的参数值
-        p.width = (int) (displayWidth * 0.9);    //宽度设置为屏幕的0.5
-        dialog.getWindow().setAttributes(p);
-        dialog.show();
-    }
 }

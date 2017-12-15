@@ -2,7 +2,6 @@ package com.lovegod.newbuy;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
@@ -27,25 +26,18 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.hyphenate.chat.EMConversation;
-import com.hyphenate.easeui.EaseConstant;
-import com.hyphenate.easeui.domain.EaseUser;
-import com.hyphenate.easeui.ui.EaseConversationListFragment;
 import com.lovegod.newbuy.bean.Commodity;
 import com.lovegod.newbuy.bean.Location;
 import com.lovegod.newbuy.service.BluetoothService;
 import com.lovegod.newbuy.service.NetWorkService;
+import com.lovegod.newbuy.utils.system.SpUtils;
 import com.lovegod.newbuy.view.BaseActivity;
-import com.lovegod.newbuy.view.chat.ChatActivity;
 import com.lovegod.newbuy.view.fragment.Cart_Activity;
+import com.lovegod.newbuy.view.fragment.Home_Activity;
 import com.lovegod.newbuy.view.fragment.Life_Fragment;
 import com.lovegod.newbuy.view.fragment.MyInfo_Activity;
 import com.lovegod.newbuy.view.fragment.Sort_Activity;
-import com.lovegod.newbuy.view.myinfo.MyInfoActivity;
-import com.lovegod.newbuy.view.carts.CartActivity;
-import com.lovegod.newbuy.view.fragment.Home_Activity;
 import com.lovegod.newbuy.view.goods.GoodActivity;
-import com.lovegod.newbuy.view.sorts.SortActivity;
 import com.lovegod.newbuy.view.utils.BottomNavigationViewHelper;
 
 import java.io.IOException;
@@ -125,8 +117,10 @@ public class MainActivity extends BaseActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, 1);
             Toast.makeText(this, "蓝牙没打开", Toast.LENGTH_SHORT).show();
+        }else{
+            SpUtils.putBoolean(MainActivity.this,"bleuse",true);
+            timer.schedule(timerTask, 0, 50 * 1000);
         }
-        //timer.schedule(timerTask, 0, 30 * 1000);
 
         initView();
 
@@ -234,14 +228,14 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    /*private TimerTask timerTask = new TimerTask() {
+    private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             //开启蓝牙所有推送服务
             Intent intentBlutooth = new Intent(MainActivity.this, BluetoothService.class);
             startService(intentBlutooth);
         }
-    };*/
+    };
 
     private long exitTime = 0;
 

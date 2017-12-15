@@ -1,17 +1,13 @@
 package com.lovegod.newbuy.view.fragment;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.Geocoder;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +19,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.telephony.cdma.CdmaCellLocation;
@@ -32,27 +27,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
 import com.daimajia.slider.library.Indicators.PagerIndicator;
 import com.daimajia.slider.library.SliderLayout;
-import com.daimajia.slider.library.SliderTypes.BaseSliderView;
-import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.google.gson.Gson;
 import com.google.zxing.activity.CaptureActivity;
-import com.lovegod.newbuy.MyApplication;
 import com.lovegod.newbuy.R;
 import com.lovegod.newbuy.api.BaseObserver;
 import com.lovegod.newbuy.api.NetWorks;
@@ -62,21 +45,16 @@ import com.lovegod.newbuy.bean.Shop;
 import com.lovegod.newbuy.bean.User;
 import com.lovegod.newbuy.utils.system.SpUtils;
 import com.lovegod.newbuy.utils.system.SystemUtils;
-import com.lovegod.newbuy.view.Shop2Activity;
 import com.lovegod.newbuy.view.goods.GoodActivity;
 import com.lovegod.newbuy.view.goods.MyGridView;
 import com.lovegod.newbuy.view.myview.OnRefreshListener;
 import com.lovegod.newbuy.view.myview.RefreshLayout;
 import com.lovegod.newbuy.view.myview.SearchLayout;
 import com.lovegod.newbuy.view.search.SearchActivity;
-import com.lovegod.newbuy.view.utils.GradationScrollView;
 
 import java.io.IOException;
-import java.sql.Ref;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -97,7 +75,7 @@ import static com.lovegod.newbuy.MainActivity.REQUEST_CODE;
  * *******************************************
  */
 
-public class Home_Activity extends Fragment{
+public class Home_Activity extends Fragment {
 
     // 按类别搜索显示图标
     final int[] images = new int[]{R.mipmap.gree01, R.mipmap.midea01,
@@ -117,7 +95,7 @@ public class Home_Activity extends Fragment{
     private RefreshLayout refreshLayout;
     private RecyclerView homeRecycler;
     private HomeAdapter adapter;
-    private List<Commodity>commodityList=new ArrayList<>();
+    private List<Commodity> commodityList = new ArrayList<>();
     private User user;
 
     private HomeImageListAdapter homeImageListAdapter;
@@ -145,17 +123,17 @@ public class Home_Activity extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.home, container, false);
-        user= (User) SpUtils.getObject(getActivity(),"userinfo");
+        user = (User) SpUtils.getObject(getActivity(), "userinfo");
         //listView = (ListView) view.findViewById(R.id.suggest_shop);
         //gridView = (MyGridView) view.findViewById(R.id.gridView_separate);
         scan_code_btn = (Button) view.findViewById(R.id.scan_code_btn);
         city_name = (Button) view.findViewById(R.id.city_name);
-        titleLayout=(RelativeLayout)view.findViewById(R.id.rl_first_top);
-        refreshLayout=(RefreshLayout)view.findViewById(R.id.home_refresh);
+        titleLayout = (RelativeLayout) view.findViewById(R.id.rl_first_top);
+        refreshLayout = (RefreshLayout) view.findViewById(R.id.home_refresh);
         refreshLayout.setBackground(getResources().getColor(R.color.colorPrimary));
-        homeRecycler=(RecyclerView)view.findViewById(R.id.home_list);
-        adapter=new HomeAdapter(getActivity(),commodityList,images);
-        homeRecycler.setLayoutManager(new GridLayoutManager(getActivity(),6,GridLayoutManager.VERTICAL,false));
+        homeRecycler = (RecyclerView) view.findViewById(R.id.home_list);
+        adapter = new HomeAdapter(getActivity(), commodityList, images);
+        homeRecycler.setLayoutManager(new GridLayoutManager(getActivity(), 6, GridLayoutManager.VERTICAL, false));
         homeRecycler.setAdapter(adapter);
         homeRecycler.addItemDecoration(new HomeDecoration(getActivity()));
 
@@ -170,12 +148,12 @@ public class Home_Activity extends Fragment{
         homeImageListAdapter = new HomeImageListAdapter();
         String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION};
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || SystemUtils.checkPermissionGranted(getActivity(), permissions)) {
-            try{
+            try {
                 init();
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }else{
+        } else {
             requestPermissions(permissions, 1);
         }
 
@@ -186,7 +164,7 @@ public class Home_Activity extends Fragment{
         searchLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(),SearchActivity.class));
+                startActivity(new Intent(getActivity(), SearchActivity.class));
             }
         });
 
@@ -209,12 +187,12 @@ public class Home_Activity extends Fragment{
      * 获取推荐商品
      */
     private void getRecommendGoods() {
-        if(user!=null) {
+        if (user != null) {
             commodityList.clear();
             NetWorks.getRecommendGoods(user.getUid(), new BaseObserver<List<Commodity>>() {
                 @Override
                 public void onHandleSuccess(List<Commodity> commodities) {
-                    for(Commodity commodity:commodities){
+                    for (Commodity commodity : commodities) {
                         commodityList.add(commodity);
                     }
                     adapter.notifyDataSetChanged();
@@ -224,7 +202,7 @@ public class Home_Activity extends Fragment{
                 @Override
                 public void onHandleError(List<Commodity> commodities) {
                     refreshLayout.refreshDone();
-                    Toast.makeText(getActivity(),"刷新失败",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "刷新失败", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -244,7 +222,7 @@ public class Home_Activity extends Fragment{
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-}
+    }
 
     /**
      * 添加基站定位
@@ -258,6 +236,16 @@ public class Home_Activity extends Fragment{
         int cid = 0;
         int lac = 0;
         if (telephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             CdmaCellLocation cdmaCellLocation = (CdmaCellLocation)
                     telephonyManager.getCellLocation();
             cid = cdmaCellLocation.getBaseStationId(); //获取cdma基站识别标号 BID
@@ -278,7 +266,7 @@ public class Home_Activity extends Fragment{
 //                .build();
         String params="?coord=gcj02&output=json&mcc="+mcc+"&mnc="+Integer.parseInt(mnc)+"&lac="+lac+"&ci="+cid;
         final Request request = new Request.Builder()
-                .url("http://api.cellocation.com/cell/"+params)
+                .url("http://api.cellocation.com:81/cell/"+params)
                 .get()
                 .build();
         System.out.println("定位："+mcc+" "+mnc+" "+lac+" "+cid+" ");

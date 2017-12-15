@@ -127,9 +127,9 @@ public class HomeAdapter extends RecyclerView.Adapter {
     private void initSlider(SliderLayout mSliderLayout, PagerIndicator indicator) {
         mSliderLayout.removeAllSliders();
         List<String> imageUrls = new ArrayList<>();
-        imageUrls.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1502106197328&di=53f4cc298f1cef374cd6315bc3ee469f&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F10%2F73%2F38%2F90b1OOOPIC9d.jpg");
-        imageUrls.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1502106231949&di=c821f7c7371b60a71c28b58d2aee3a05&imgtype=0&src=http%3A%2F%2Fpic2.ooopic.com%2F11%2F95%2F09%2F16bOOOPIC6b_1024.jpg");
-        imageUrls.add("https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3922813695,1834018485&fm=26&gp=0.jpg");
+        imageUrls.add("http://scimg.jb51.net/allimg/161207/102-16120G10SNL.jpg");
+        imageUrls.add("http://img.sc115.com/uploads1/sc/psd/161017/1610173237672.jpg");
+        imageUrls.add("https://img.alicdn.com/tps/TB1c01uPXXXXXbsXXXXXXXXXXXX-760-400.jpg_q75.jpg");
         for (int i = 0; i < imageUrls.size(); i++) {
             //新建三个展示View，并且添加到SliderLayout
             TextSliderView tsv = new TextSliderView(mContext);
@@ -138,7 +138,7 @@ public class HomeAdapter extends RecyclerView.Adapter {
             tsv.setOnSliderClickListener(new BaseSliderView.OnSliderClickListener() {
                 @Override
                 public void onSliderClick(BaseSliderView slider) {
-                    Toast.makeText(mContext, "图", Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(mContext, "图", Toast.LENGTH_SHORT).show();
                 }
             });
             mSliderLayout.addSlider(tsv);
